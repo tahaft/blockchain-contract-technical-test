@@ -14,24 +14,32 @@ async function getContract(contractAddress) {
     const digitalWaveContract = new ethers.Contract(contractAddress, contract.abi, signer);
     const message = await digitalWaveContract.message();
     const creator = await digitalWaveContract.creator();
-    const returnedContract = {'address': digitalWaveContract.address, 'message': message, 'creator': creator};
+    const fact = await digitalWaveContract.fact();
+    const returnedContract = {'address': digitalWaveContract.address, 'message': message, 'creator': creator, 'fact': fact};
     return returnedContract;
 }
 
-async function updateContract(contractAddress, newMessage) {
+async function updateContract(contractAddress, newMessage, newFact) {
     const digitalWaveContract = new ethers.Contract(contractAddress, contract.abi, signer);
-    const tx = await digitalWaveContract.update(newMessage)
+    const tx = await digitalWaveContract.update(newMessage, newFact);
     await tx.wait()
 
     const message = await digitalWaveContract.message();
     const creator = await digitalWaveContract.creator();
-    const returnedContract = {'address': digitalWaveContract.address, 'message': message, 'creator': creator};
+    const fact = await digitalWaveContract.fact();
+
+    const returnedContract = {
+        'address': digitalWaveContract.address, 
+        'message': message, 
+        'creator': creator, 
+        'fact': fact
+    };
     return returnedContract;
 }
 
-async function createContract(initMessage, initCreator) {
+async function createContract(initMessage, initCreator, initFact) {
     const DigitalWave = await ethers.getContractFactory("DigitalWave");
-    return await DigitalWave.deploy(initMessage, initCreator);
+    return await DigitalWave.deploy(initMessage, initCreator, initFact);
 }
 
 module.exports = { createContract, updateContract, getContract };
